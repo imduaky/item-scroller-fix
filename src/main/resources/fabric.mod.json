@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "item_scroller_crafting_fix",
+  "version": "${version}",
+  "name": "Item Scroller Crafting Fix",
+  "description": "Serializes Item Scroller mass crafting around server inventory updates and recovers interrupted ingredient moves.",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.imduaky.itemscrollerfix.ItemScrollerCraftingFix"]
+  },
+  "mixins": ["item-scroller-crafting-fix.mixins.json"],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "itemscroller": ">=${itemscroller_version}"
+  }
+}

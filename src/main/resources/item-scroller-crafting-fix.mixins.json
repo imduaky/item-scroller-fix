@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "dev.imduaky.itemscrollerfix.mixin",
+  "compatibilityLevel": "JAVA_${java_version}",
+  "client": [
+    "KeybindCallbacksMixin",
+    "ClientPacketListenerMixin",
+    "ContainerSetSlotPacketAccessor",
+    "ContainerSetContentPacketAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

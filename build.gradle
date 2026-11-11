@@ -1,0 +1,54 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version '1.17.21'
+}
+
+group = 'dev.imduaky'
+version = project.mod_version
+
+base {
+	archivesName = "item-scroller-crafting-fix-${project.minecraft_version}"
+}
+
+repositories {
+	maven { url = 'https://maven.fabricmc.net/' }
+	mavenCentral()
+	maven { url = 'https://masa.dy.fi/maven/sakura-ryoko' }
+	maven { url = 'https://maven.fallenbreath.me/releases' }
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	compileOnly "fi.dy.masa.itemscroller:itemscroller-fabric-${project.minecraft_version}:${project.itemscroller_version}"
+	compileOnly "fi.dy.masa.malilib:malilib-fabric-${project.minecraft_version}:${project.malilib_version}"
+}
+
+java {
+	toolchain.languageVersion = JavaLanguageVersion.of(project.java_version.toInteger())
+	withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release = project.java_version.toInteger()
+	options.encoding = 'UTF-8'
+}
+
+processResources {
+	inputs.property 'version', project.version
+	inputs.property 'minecraft_version', project.minecraft_version
+	inputs.property 'java_version', project.java_version
+	inputs.property 'loader_version', project.loader_version
+	inputs.property 'itemscroller_version', project.itemscroller_version
+	filesMatching('fabric.mod.json') {
+		expand(
+			'version': project.version,
+			'minecraft_version': project.minecraft_version,
+			'java_version': project.java_version,
+			'loader_version': project.loader_version,
+			'itemscroller_version': project.itemscroller_version
+		)
+	}
+	filesMatching('item-scroller-crafting-fix.mixins.json') {
+		expand 'java_version': project.java_version
+	}
+}
