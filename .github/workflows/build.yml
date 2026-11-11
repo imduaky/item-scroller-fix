@@ -83,6 +83,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
       - name: Download mod jars
         uses: actions/download-artifact@v8.0.2
         with:
