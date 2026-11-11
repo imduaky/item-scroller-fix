@@ -28,4 +28,8 @@ replay_pid*
 build/
 run/
 
+# Required for Gradle Wrapper builds on clean CI checkouts
+!gradle/wrapper/gradle-wrapper.jar
+
 _codex_workspace
+.DS_Store
