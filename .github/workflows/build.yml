@@ -20,11 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - minecraft_version: "26.2"
+          - minecraft_version: "26.1.2"
             java_version: "25"
             loader_version: "0.19.5"
-            itemscroller_version: "0.32.2"
-            malilib_version: "0.29.6"
+            itemscroller_version: "0.31.6"
+            malilib_version: "0.28.11"
     steps:
       - name: Check out source
         uses: actions/checkout@v7.0.1
