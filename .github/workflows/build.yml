@@ -20,20 +20,42 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - minecraft_version: "26.3"
+          - branch: "je/26.1"
+            minecraft_version: "26.1.2"
+            java_version: "25"
+            loader_version: "0.19.5"
+            itemscroller_version: "0.31.6"
+            malilib_version: "0.28.11"
+          - branch: "je/26.2"
+            minecraft_version: "26.2"
+            java_version: "25"
+            loader_version: "0.19.5"
+            itemscroller_version: "0.32.2"
+            malilib_version: "0.29.6"
+          - branch: "je/26.3"
+            minecraft_version: "26.3"
             java_version: "25"
             loader_version: "0.19.5"
             itemscroller_version: "0.33.1"
             malilib_version: "0.30.2"
+          - branch: "je/1.21.11"
+            minecraft_version: "1.21.11"
+            java_version: "21"
+            build_jdk_version: "25"
+            loader_version: "0.19.5"
+            itemscroller_version: "0.30.8"
+            malilib_version: "0.27.19"
     steps:
       - name: Check out source
         uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ matrix.branch }}
 
-      - name: Set up Java ${{ matrix.java_version }}
+      - name: Set up build JDK ${{ matrix.build_jdk_version || matrix.java_version }}
         uses: actions/setup-java@v6.2.0
         with:
           distribution: temurin
-          java-version: ${{ matrix.java_version }}
+          java-version: ${{ matrix.build_jdk_version || matrix.java_version }}
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6.4.1
@@ -104,6 +126,11 @@ jobs:
           if (( ${#assets[@]} == 0 )); then
             echo "No mod jars were downloaded" >&2
             exit 1
+          fi
+
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
+            exit 0
           fi
 
           release_args=("$GITHUB_REF_NAME" "${assets[@]}" --verify-tag --generate-notes --title "$GITHUB_REF_NAME")
