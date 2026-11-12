@@ -1,6 +1,6 @@
 # Item Scroller Crafting Fix
 
-面向 Minecraft Fabric 客户端附属 mod。它通过 Mixin 注入 Item Scroller 的快速合成流程，在复用原配方整理和物品移动能力的基础上，按服务端容器更新推进连续合成。
+面向 Minecraft 26.1.2 Fabric 客户端附属 mod。它通过 Mixin 注入 Item Scroller 的快速合成流程，在复用原配方整理和物品移动能力的基础上，按服务端容器更新推进连续合成。
 
 ## 背景：原版连续合成的行为和问题
 
@@ -150,7 +150,7 @@ if (Configs.Generic.CARPET_CTRL_Q_CRAFTING.getBooleanValue()) {
 
 ## 支持范围、安装与构建
 
-- 当前只支持 Minecraft 26.2；尚未配置 26.3 或其他版本。
+- 当前分支只支持 Minecraft 26.1.2；其他版本分别维护在对应的 `je/<版本>` 分支。
 - Fabric 客户端 mod；运行需要 Fabric Loader、Item Scroller 0.32.2 和 MaLiLib。
 - 使用 Java 25、Gradle Wrapper 和 Fabric Loom 1.17.21 构建。
 - GitHub Actions 会在 push、PR 和手动触发时构建；推送 `vX.Y.Z` tag 会创建 GitHub Release，并附上构建 jar。
