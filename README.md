@@ -151,7 +151,7 @@ if (Configs.Generic.CARPET_CTRL_Q_CRAFTING.getBooleanValue()) {
 ## 支持范围、安装与构建
 
 - 当前分支只支持 Minecraft 1.21.11；26.2 和 26.3 分别维护在 `je/26.2` 和 `je/26.3`。
-- Fabric 客户端 mod；运行需要 Fabric Loader、Item Scroller 0.32.2 和 MaLiLib。
+- Fabric 客户端 mod；运行需要 Fabric Loader、Item Scroller 0.30.8 和 MaLiLib 0.27.19。
 - 使用 Java 21、Gradle Wrapper 和 Fabric Loom 1.17.21 构建。
 - GitHub Actions 会在 push、PR 和手动触发时构建；推送 `vX.Y.Z` tag 会创建 GitHub Release，并附上构建 jar。
 - 将 jar 放入 `mods` 即启用；删除 jar 即停用，没有游戏内开关。
