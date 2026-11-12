@@ -1,5 +1,5 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version '1.17.21'
+	id 'fabric-loom' version '1.17-SNAPSHOT'
 }
 
 group = 'dev.imduaky'
@@ -18,13 +18,16 @@ repositories {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	compileOnly "fi.dy.masa.itemscroller:itemscroller-fabric-${project.minecraft_version}:${project.itemscroller_version}"
-	compileOnly "fi.dy.masa.malilib:malilib-fabric-${project.minecraft_version}:${project.malilib_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modCompileOnly "fi.dy.masa.itemscroller:itemscroller-fabric-${project.minecraft_version}:${project.itemscroller_version}"
+	modCompileOnly "fi.dy.masa.malilib:malilib-fabric-${project.minecraft_version}:${project.malilib_version}"
 }
 
 java {
-	toolchain.languageVersion = JavaLanguageVersion.of(project.java_version.toInteger())
+	// The project targets Java 21, but the local build can use a newer JDK (25).
+	// javac's --release flag below keeps the generated classes compatible with Java 21.
+	toolchain.languageVersion = JavaLanguageVersion.of(project.build_jdk_version.toInteger())
 	withSourcesJar()
 }
 
