@@ -36,7 +36,7 @@ jobs:
       - name: Upload mod jar
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: branch-build-${{ github.ref_name }}
+          name: branch-build
           path: |
             build/libs/item-scroller-crafting-fix-*.jar
             !build/libs/*-sources.jar
