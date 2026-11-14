@@ -150,10 +150,10 @@ if (Configs.Generic.CARPET_CTRL_Q_CRAFTING.getBooleanValue()) {
 
 ## 支持范围、安装与构建
 
-- 当前只支持 Minecraft 26.2；尚未配置 26.3 或其他版本。
+- 当前分支支持 Minecraft 26.2；其他版本分别维护在 `je/26.1`、`je/26.3` 和 `je/1.21.11`。
 - Fabric 客户端 mod；运行需要 Fabric Loader、Item Scroller 0.32.2 和 MaLiLib。
 - 使用 Java 25、Gradle Wrapper 和 Fabric Loom 1.17.21 构建。
-- GitHub Actions 会在 push、PR 和手动触发时构建；推送 `vX.Y.Z` tag 会创建 GitHub Release，并附上构建 jar。
+- GitHub Actions 会构建四个版本分支；推送 `vX.Y.Z` tag 会从各分支构建并汇总 jar 到同一个 GitHub Release。
 - 将 jar 放入 `mods` 即启用；删除 jar 即停用，没有游戏内开关。
 
 ```sh
@@ -162,7 +162,7 @@ if (Configs.Generic.CARPET_CTRL_Q_CRAFTING.getBooleanValue()) {
 
 构建产物位于 `build/libs/`。
 
-当前版本参数位于 `gradle.properties`，GitHub Actions 的构建版本矩阵位于 `.github/workflows/build.yml`。添加 Minecraft 版本时，在矩阵中补充对应的 Minecraft、Java、Loader、Item Scroller 和 MaLiLib 版本即可；Fabric 元数据和产物文件名会跟随这些参数变化。
+当前版本参数位于 `gradle.properties`，GitHub Actions 的分支与构建版本矩阵位于 `.github/workflows/build.yml`。添加 Minecraft 版本时，在矩阵中补充分支名及对应的 Minecraft、Java、Loader、Item Scroller 和 MaLiLib 版本即可；Fabric 元数据和产物文件名会跟随这些参数变化。
 
 ## 使用和调研参考
 
