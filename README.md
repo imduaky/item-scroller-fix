@@ -153,7 +153,7 @@ if (Configs.Generic.CARPET_CTRL_Q_CRAFTING.getBooleanValue()) {
 - 当前分支支持 Minecraft 26.2；其他版本分别维护在 `je/26.1`、`je/26.3` 和 `je/1.21.11`。
 - Fabric 客户端 mod；运行需要 Fabric Loader、Item Scroller 0.32.2 和 MaLiLib。
 - 使用 Java 25、Gradle Wrapper 和 Fabric Loom 1.17.21 构建。
-- GitHub Actions 会构建四个版本分支；推送 `vX.Y.Z` tag 会从各分支构建并汇总 jar 到同一个 GitHub Release。
+- GitHub Actions 在分支 push/PR 时只构建当前分支；推送 `vX.Y.Z` tag 会从四个版本分支构建并汇总 jar 到同一个 GitHub Release。
 - 将 jar 放入 `mods` 即启用；删除 jar 即停用，没有游戏内开关。
 
 ```sh

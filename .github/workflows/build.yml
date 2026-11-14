@@ -13,8 +13,39 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build Minecraft ${{ matrix.minecraft_version }}
+  build-branch:
+    name: Build current branch
+    if: github.ref_type != 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up build JDK
+        uses: actions/setup-java@v6.2.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6.4.1
+
+      - name: Build mod
+        run: ./gradlew --no-daemon build
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: branch-build-${{ github.ref_name }}
+          path: |
+            build/libs/item-scroller-crafting-fix-*.jar
+            !build/libs/*-sources.jar
+          if-no-files-found: error
+          retention-days: 7
+
+  build-release:
+    name: Build Minecraft ${{ matrix.minecraft_version }} for release
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -100,7 +131,7 @@ jobs:
   release:
     name: Publish GitHub Release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: build-release
     runs-on: ubuntu-latest
     permissions:
       contents: write
