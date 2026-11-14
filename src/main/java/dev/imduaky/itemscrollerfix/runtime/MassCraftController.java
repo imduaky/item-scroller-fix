@@ -32,8 +32,6 @@ public final class MassCraftController {
     private static boolean acknowledged;
     private static boolean disabledUntilRelease;
     private static boolean cursorRecoveryPending;
-    // Initial inventory cleanup is done once per held mass-craft action, not once per craft.
-    private static boolean inventoryCleanupDone;
     private static ItemStack expectedResult = ItemStack.EMPTY;
     private static int outputSlot = 0;
     private static AbstractContainerScreen<?> activeScreen;
@@ -105,9 +103,11 @@ public final class MassCraftController {
                     if (waitingContainer != -1) return;
                 }
                 if (waitPhase == WAIT_EXISTING_RESULT_DROP) {
-                    inventoryCleanupDone = true;
+                    // A drop can update only one inventory slot at a time. Re-scan on the next
+                    // tick so every matching backpack stack is removed before crafting resumes.
                     waitingContainer = -1;
                     waitPhase = WAIT_NONE;
+                    return;
                 }
                 if (waitPhase == WAIT_OUTPUT_TAKE) {
                     if (output.hasItem() && InventoryUtils.areStacksEqual(output.getItem(), expectedResult)) {
@@ -138,14 +138,11 @@ public final class MassCraftController {
         outputSlot = output.index;
         waitPhase = WAIT_NONE;
 
-        // Match Item Scroller's throw-results action: discard existing copies of the selected
-        // recipe output, while leaving unrelated inventory items untouched.
-        if (!inventoryCleanupDone) {
-            if (dropExistingRecipeResults(mc, screen)) {
-                waitPhase = WAIT_EXISTING_RESULT_DROP;
-                return;
-            }
-            inventoryCleanupDone = true;
+        // Match Item Scroller's throw-results action on every iteration. This also handles
+        // output stacks that arrive in the inventory after a previous server update.
+        if (dropExistingRecipeResults(mc, screen)) {
+            waitPhase = WAIT_EXISTING_RESULT_DROP;
+            return;
         }
 
         if (output.hasItem() && InventoryUtils.areStacksEqual(output.getItem(), expectedResult)) {
@@ -255,7 +252,6 @@ public final class MassCraftController {
         acknowledged = false;
         disabledUntilRelease = false;
         cursorRecoveryPending = false;
-        inventoryCleanupDone = false;
         expectedResult = ItemStack.EMPTY;
         outputSlot = 0;
         activeScreen = null;
