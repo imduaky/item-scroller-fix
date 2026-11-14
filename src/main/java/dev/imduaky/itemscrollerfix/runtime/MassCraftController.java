@@ -8,6 +8,7 @@ import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler.SlotRange;
 import fi.dy.masa.itemscroller.recipes.RecipePattern;
 import fi.dy.masa.itemscroller.recipes.RecipeStorage;
+import fi.dy.masa.itemscroller.util.ClickPacketBuffer;
 import fi.dy.masa.itemscroller.util.InventoryUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.Minecraft;
@@ -45,7 +46,8 @@ public final class MassCraftController {
                 || (!Hotkeys.MASS_CRAFT.getKeybind().isKeybindHeld()
                 && !Configs.Generic.MASS_CRAFT_HOLD.getBooleanValue())
                 || !(GuiUtils.getCurrentScreen() instanceof AbstractContainerScreen<?> screen)
-                || screen.getMenu() != mc.player.containerMenu) {
+                || screen.getMenu() != mc.player.containerMenu
+                || Configs.GUI_BLACKLIST.contains(screen.getClass().getName())) {
             return false;
         }
 
@@ -59,7 +61,15 @@ public final class MassCraftController {
 
         // The player inventory has a 2x2 grid. Preserve Item Scroller's small-grid stop,
         // but still allow the selected recipe's existing output to be discarded.
-        tick(mc, screen, grid, output, recipe, true);
+        boolean wasBufferingClicks = ClickPacketBuffer.shouldBufferClickPackets();
+        if (Configs.Generic.RATE_LIMIT_CLICK_PACKETS.getBooleanValue()) {
+            ClickPacketBuffer.setShouldBufferClickPackets(true);
+        }
+        try {
+            tick(mc, screen, grid, output, recipe, true);
+        } finally {
+            ClickPacketBuffer.setShouldBufferClickPackets(wasBufferingClicks);
+        }
         return true;
     }
 
