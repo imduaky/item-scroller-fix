@@ -4,8 +4,10 @@ import dev.imduaky.itemscrollerfix.mixin.ContainerSetContentPacketAccessor;
 import dev.imduaky.itemscrollerfix.mixin.ContainerSetSlotPacketAccessor;
 import fi.dy.masa.itemscroller.config.Configs;
 import fi.dy.masa.itemscroller.config.Hotkeys;
+import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler.SlotRange;
 import fi.dy.masa.itemscroller.recipes.RecipePattern;
+import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.util.InventoryUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.Minecraft;
@@ -38,11 +40,43 @@ public final class MassCraftController {
 
     private MassCraftController() {}
 
+    public static boolean tickIfPlayerGridTooSmall(Minecraft mc) {
+        if (mc.player == null || mc.gameMode == null
+                || (!Hotkeys.MASS_CRAFT.getKeybind().isKeybindHeld()
+                && !Configs.Generic.MASS_CRAFT_HOLD.getBooleanValue())
+                || !(GuiUtils.getCurrentScreen() instanceof AbstractContainerScreen<?> screen)
+                || screen.getMenu() != mc.player.containerMenu) {
+            return false;
+        }
+
+        Slot output = CraftingHandler.getFirstCraftingOutputSlotForGui(screen);
+        SlotRange grid = output != null ? CraftingHandler.getCraftingGridSlots(screen, output) : null;
+        RecipePattern recipe = RecipeStorage.getInstance().getSelectedRecipe();
+        if (grid == null || output == null || recipe.getResult().isEmpty()
+                || grid.getSlotCount() >= recipe.countRecipeItems()) {
+            return false;
+        }
+
+        // The player inventory has a 2x2 grid. Preserve Item Scroller's small-grid stop,
+        // but still allow the selected recipe's existing output to be discarded.
+        tick(mc, screen, grid, output, recipe, true);
+        return true;
+    }
+
     public static void tick(Minecraft mc,
                             AbstractContainerScreen<?> screen,
                             SlotRange grid,
                             Slot output,
                             RecipePattern recipe) {
+        tick(mc, screen, grid, output, recipe, false);
+    }
+
+    private static void tick(Minecraft mc,
+                             AbstractContainerScreen<?> screen,
+                             SlotRange grid,
+                             Slot output,
+                             RecipePattern recipe,
+                             boolean inventoryOnly) {
         if (mc.player == null || mc.gameMode == null || screen.getMenu() != mc.player.containerMenu) {
             reset();
             return;
@@ -142,6 +176,12 @@ public final class MassCraftController {
         // output stacks that arrive in the inventory after a previous server update.
         if (dropExistingRecipeResults(mc, screen)) {
             waitPhase = WAIT_EXISTING_RESULT_DROP;
+            return;
+        }
+
+        if (inventoryOnly) {
+            waitingContainer = -1;
+            waitPhase = WAIT_NONE;
             return;
         }
 

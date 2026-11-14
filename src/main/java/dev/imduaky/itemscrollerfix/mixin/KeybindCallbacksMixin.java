@@ -14,6 +14,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = KeybindCallbacks.class, remap = false)
 public abstract class KeybindCallbacksMixin {
+    // The player inventory's 2x2 grid rejects larger recipes before Item Scroller reaches
+    // the crafting-method hooks below. Keep its rejection, but allow result cleanup first.
+    @Inject(method = "onClientTickMassCraftImpl", at = @At("HEAD"), cancellable = true)
+    private void itemscrollerfix$discardResultsWhenPlayerGridIsTooSmall(Minecraft minecraft, CallbackInfo ci) {
+        if (MassCraftController.tickIfPlayerGridTooSmall(minecraft)) {
+            ci.cancel();
+        }
+    }
+
     // Clear pending state when the mass-craft key is released or the crafting screen closes.
     @Inject(method = "onClientTick", at = @At("RETURN"))
     private void itemscrollerfix$clearAfterMassCraftRelease(Minecraft minecraft, CallbackInfo ci) {
